@@ -5,7 +5,7 @@
 ### Steps (in the `jtopaz1/openpi` repo)
 
 1. Open `pyproject.toml`
-2. Add `"chex>=0.1.91"` to the `dependencies` list under `[project]`
+2. Add `"chex>=0.1.86,<0.1.91"` to the `dependencies` list under `[project]`
 3. Commit and push
 4. Note the new commit SHA
 
@@ -24,7 +24,18 @@ openpi.gibbonbot.compute_norm_stats
         → import chex  ← ModuleNotFoundError
 ```
 
-`chex` is used in `fsq_tokenizer.py` for assertion helpers (`chex.assert_equal_shape`, `chex.assert_shape`) — only 3 call sites, all in that one file. It's a standard DeepMind JAX testing/assertion library (latest: `0.1.91`).
+`chex` is used in `fsq_tokenizer.py` for assertion helpers (`chex.assert_equal_shape`, `chex.assert_shape`) — only 3 call sites, all in that one file. It's a standard DeepMind JAX testing/assertion library.
+
+### Version constraint rationale
+
+`chex>=0.1.91` is incompatible with `jax==0.5.3` (pinned in this project) because `chex 0.1.91` requires `jax>=0.7.0`. The highest compatible version is `chex 0.1.90`, which requires `jax>=0.4.27`. The constraint `>=0.1.86,<0.1.91` gives the resolver room while excluding the incompatible 0.1.91 release.
+
+| chex version | jax requirement | Compatible with jax 0.5.3? |
+|---|---|---|
+| 0.1.88 | `>=0.4.27` | Yes |
+| 0.1.89 | `>=0.4.27` | Yes |
+| 0.1.90 | `>=0.4.27` | Yes |
+| 0.1.91 | `>=0.7.0` | No |
 
 ### Verification
 
