@@ -318,5 +318,5 @@ def train_with_config(config: _config.TrainConfig, training_args: dict[str, Any]
 
 # This script is meant to be used as a module, like so
 # from openpi.training.config import get_config
-# from openpi.phospho.train import train_with_config
+# from openpi.gibbonbot.train import train_with_config
 # train_with_config(get_config("my_config"), training_args)

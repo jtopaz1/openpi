@@ -119,5 +119,5 @@ def compute_norm_with_config(config: _config.TrainConfig, training_args: dict[st
 
 # This script is meant to be used as a module, like so
 # from openpi.training.config import get_config
-# from openpi.phospho.compute_norm_stats import compute_norm_with_config
+# from openpi.gibbonbot.compute_norm_stats import compute_norm_with_config
 # compute_norm_with_config(get_config("my_config"), training_args)
