@@ -15,6 +15,8 @@ import openpi.training.config as _config
 from openpi.training.droid_rlds_dataset import DroidRldsDataset
 import openpi.transforms as _transforms
 
+import pandas as pd
+
 T_co = TypeVar("T_co", covariant=True)
 
 
@@ -126,6 +128,18 @@ class FakeDataset(Dataset):
         return self._num_samples
 
 
+def parse_tasks(tasks: pd.DataFrame) -> dict[int, str]:
+    """Convert a LeRobot tasks DataFrame to a dict mapping task_index to task string.
+
+    Supports both:
+    - v3 format: task strings as the DataFrame index, with a task_index column.
+    - Old format: numeric index, with both task_index and task columns.
+    """
+    if "task" in tasks.columns:
+        return {int(row["task_index"]): row["task"] for _, row in tasks.iterrows()}
+    return {int(row.task_index): task for task, row in tasks.iterrows()}
+
+
 def create_torch_dataset(
     data_config: _config.DataConfig, action_horizon: int, model_config: _model.BaseModelConfig
 ) -> Dataset:
@@ -146,9 +160,7 @@ def create_torch_dataset(
     )
 
     if data_config.prompt_from_task:
-        # In lerobot v0.4.x, tasks is a pd.DataFrame with task names as index and a task_index column.
-        # Convert to dict[int, str] as expected by PromptFromLeRobotTask.
-        tasks = {int(row.task_index): task for task, row in dataset_meta.tasks.iterrows()}
+        tasks = parse_tasks(dataset_meta.tasks)
         dataset = TransformedDataset(dataset, [_transforms.PromptFromLeRobotTask(tasks)])
 
     return dataset

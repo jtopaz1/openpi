@@ -1,6 +1,7 @@
 import dataclasses
 
 import jax
+import pandas as pd
 
 from openpi.models import pi0_config
 from openpi.training import config as _config
@@ -82,3 +83,17 @@ def test_with_real_dataset():
 
     for _, actions in batches:
         assert actions.shape == (config.batch_size, config.model.action_horizon, config.model.action_dim)
+
+
+def test_parse_tasks_v3_format():
+    """v3 format: task strings as DataFrame index, task_index as column."""
+    tasks = pd.DataFrame({"task_index": [0, 1]}, index=["pick up cup", "put down cup"])
+    result = _data_loader.parse_tasks(tasks)
+    assert result == {0: "pick up cup", 1: "put down cup"}
+
+
+def test_parse_tasks_old_format():
+    """Old format: numeric index, task and task_index as columns."""
+    tasks = pd.DataFrame({"task_index": [0, 1], "task": ["pick up cup", "put down cup"]})
+    result = _data_loader.parse_tasks(tasks)
+    assert result == {0: "pick up cup", 1: "put down cup"}
